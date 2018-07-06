@@ -1,0 +1,43 @@
+1. 在项目主页内找到winsw的下载页面（我用的是最新2.0.2版本，你可以下载最新的）
+
+http://repo.jenkins-ci.org/re...
+
+下载的文件：winsw-2.0.2-bin.exe
+
+2. 在nginx项目页面下载nginx windows版本
+
+http://nginx.org
+
+把nginx压缩包解压放到指定目录，例如我放的是d盘根目录（路径中不要带空格，否则会启动失败）
+
+nginx目录是：D:/inx-1.11.11
+
+3. 将winsw-2.0.2-bin.exe复制到nginx目录：D:/nginx-1.11.11，并将其改成nginx-service.exe
+
+4. 新建一个xml文件nginx-service.xml，名称一定要与3中相同(nginx-service)。文件内容如下：
+
+<service>
+
+  <id>nginx</id>
+
+  <name>nginx</name>
+
+  <description>nginx</description>
+
+  <env name="path" value="D:/nginx-1.11.11"/>
+
+  <executable>D:/nginx-1.11.11/nginx.exe</executable>
+
+  <arguments>-p D:/nginx-1.11.11</arguments>
+
+ <logpath>D:/nginx-1.11.11/logs/</logpath>      
+
+  <logmode>roll</logmode>
+
+</service>
+
+5. 运行Windows cmd命令，进入nginx目录：，在运行nginx-service.exe install将其注册为windws系统服务。
+
+可在系统服务中看到nginx服务
+
+6. 鼠标右键启动服务，访问http://localhost出现nginx页面，安装成功。
