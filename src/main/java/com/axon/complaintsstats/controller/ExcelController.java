@@ -1,6 +1,7 @@
 package com.axon.complaintsstats.controller;
 
 import java.io.*;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.excel.ExcelReader;
+import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.metadata.Sheet;
 import com.alibaba.excel.read.event.AnalysisEventListener;
 import com.alibaba.excel.support.ExcelTypeEnum;
@@ -20,6 +22,7 @@ import com.axon.complaintsstats.util.ExcelUtil;
 import com.axon.complaintsstats.util.FtpFileUtil;
 import com.axon.complaintsstats.util.StreamConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -91,6 +94,8 @@ public class ExcelController {
         }
         return  filePath;  //该路径图片名称，前端框架可用ngnix指定的路径+filePath,即可访问到ngnix图片服务器中的图片
     }
+    @Value("${web.upload-path}")
+    private String webUploadPath;
 
     @RequestMapping(value="/uploadExcelFile", method = RequestMethod.POST)
     @ResponseBody
@@ -118,6 +123,29 @@ public class ExcelController {
         finally {
             try {
                 inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @RequestMapping(value="/makeExcelFile", method = RequestMethod.POST)
+    public void writeExcel(HttpServletResponse response, @RequestBody List<LoanInfo> data) throws IOException {
+        String fileName = ExcelUtil.genDateFileName();
+        response.setHeader("content-Type", "application/vnd.ms-excel");//application/octet-stream
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
+        OutputStream out = response.getOutputStream(); //new FileOutputStream(webUploadPath + fileName);
+        try {
+            ExcelWriter writer = new ExcelWriter(out, ExcelTypeEnum.XLSX);
+            Sheet sheet1 = new Sheet(1, 1, LoanInfo.class);
+            writer.write(data, sheet1);
+            writer.finish();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                out.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -158,7 +186,7 @@ public class ExcelController {
                 try {
                     byte[] bytes = file.getBytes();
                     stream = new BufferedOutputStream(new FileOutputStream(
-                            new File(file.getOriginalFilename())));
+                            new File(webUploadPath + file.getOriginalFilename())));
                     stream.write(bytes);
                     stream.close();
                 } catch (Exception e) {

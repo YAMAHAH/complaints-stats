@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class LoanInfo extends BaseRowModel {
-    @ExcelProperty(index = 0)
+    @ExcelProperty( value = {"bankLoanId"},index = 0)
     private String bankLoanId;
 
     public String getBankLoanId() {
@@ -34,7 +34,7 @@ public class LoanInfo extends BaseRowModel {
         this.sax = sax;
     }
 
-    @ExcelProperty(index = 1)
+    @ExcelProperty(value = {"customerId"},index = 1)
     private Long customerId;
 //
 //    @ExcelProperty(index = 2,format = "yyyy/MM/dd")

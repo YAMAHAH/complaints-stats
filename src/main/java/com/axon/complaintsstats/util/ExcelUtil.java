@@ -6,7 +6,9 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.axon.complaintsstats.model.excel.ExcelData;
@@ -164,6 +166,11 @@ public class ExcelUtil {
         return filePath.matches("^.+\\.(?i)(xlsx)$");
     }
 
+   public static String genDateFileName(){
+       SimpleDateFormat fdate = new SimpleDateFormat("yyyyMMddHHmmss");
+       String fileName = fdate.format(new Date()) + ".xlsx";
+       return  fileName;
+   }
 //    public List<Map<String,Object>> read(InputStream inputStream, String fileName) throws IOException {
 //        Workbook workbook = null;
 //        /** 判断文件的类型，是2003还是2007 */
